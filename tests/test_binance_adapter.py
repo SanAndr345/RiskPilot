@@ -60,5 +60,32 @@ class TestBinanceAdapter(unittest.TestCase):
         self.assertEqual(positions[1].symbol, "ETH")
         self.assertEqual(positions[1].value, 1.5)
 
+    def test_balances_to_positions_risk_engine(self):
+        adapter = BinanceAdapter()
+
+        balances = [
+            BinanceBalance(
+                asset="BTC",
+                free=6.0,
+                locked=0.0,
+            ),
+            BinanceBalance(
+                asset="ETH",
+                free=4.0,
+                locked=0.0,
+            ),
+        ]
+
+        positions = adapter.balances_to_positions(balances)
+
+        from riskpilot.risk.engine import assess_concentration
+
+        result = assess_concentration(positions)
+
+        self.assertEqual(result.total_value, 10.0)
+        self.assertEqual(result.largest_position, "BTC")
+        self.assertEqual(result.largest_weight, 0.6)
+        self.assertEqual(result.concentration_risk, "HIGH")
+
 if __name__ == "__main__":
     unittest.main()
