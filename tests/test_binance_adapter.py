@@ -87,5 +87,39 @@ class TestBinanceAdapter(unittest.TestCase):
         self.assertEqual(result.largest_weight, 0.6)
         self.assertEqual(result.concentration_risk, "HIGH")
 
+    def test_balances_to_positions_with_prices(self):
+        adapter = BinanceAdapter()
+
+        balances = [
+            BinanceBalance(
+                asset="BTC",
+                free=0.5,
+                locked=0.1,
+            ),
+            BinanceBalance(
+                asset="ETH",
+                free=1.0,
+                locked=0.5,
+            ),
+        ]
+
+        prices = {
+            "BTC": 100000.0,
+            "ETH": 4000.0,
+        }
+
+        positions = adapter.balances_to_positions_with_prices(
+            balances,
+            prices,
+        )
+
+        self.assertEqual(len(positions), 2)
+
+        self.assertEqual(positions[0].symbol, "BTC")
+        self.assertEqual(positions[0].value, 60000.0)
+
+        self.assertEqual(positions[1].symbol, "ETH")
+        self.assertEqual(positions[1].value, 6000.0)
+
 if __name__ == "__main__":
     unittest.main()

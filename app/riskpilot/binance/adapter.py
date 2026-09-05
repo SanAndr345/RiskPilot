@@ -50,6 +50,22 @@ class BinanceAdapter:
             for balance in balances
         ]
 
+    def balances_to_positions_with_prices(
+        self,
+        balances: list[BinanceBalance],
+        prices: dict[str, float],
+    ) -> list[Position]:
+        """
+        Convert Binance balances into positions using market prices.
+        """
+        return [
+            Position(
+                symbol=balance.asset,
+                value=(balance.free + balance.locked) * prices.get(balance.asset, 0.0),
+            )
+            for balance in balances
+        ]
+
     def get_balances(self) -> list[BinanceBalance]:
         """
         Placeholder for the actual AgentOS/MCP call.
