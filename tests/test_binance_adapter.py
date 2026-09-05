@@ -140,5 +140,33 @@ class TestBinanceAdapter(unittest.TestCase):
         self.assertEqual(prices["BTC"], 100000.0)
         self.assertEqual(prices["ETH"], 4000.0)
 
+    def test_balances_to_positions_with_missing_price(self):
+        adapter = BinanceAdapter()
+
+        balances = [
+            BinanceBalance(
+                asset="BTC",
+                free=0.5,
+                locked=0.1,
+            ),
+            BinanceBalance(
+                asset="ABC",
+                free=10.0,
+                locked=0.0,
+            ),
+        ]
+
+        prices = {
+            "BTC": 100000.0,
+        }
+
+        positions = adapter.balances_to_positions_with_prices(
+            balances,
+            prices,
+        )
+
+        self.assertEqual(positions[0].value, 60000.0)
+        self.assertEqual(positions[1].value, 0.0)
+
 if __name__ == "__main__":
     unittest.main()
