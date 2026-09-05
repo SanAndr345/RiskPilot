@@ -66,6 +66,19 @@ class BinanceAdapter:
             for balance in balances
         ]
 
+    def parse_ticker_prices(self, response):
+        """
+        Convert Binance ticker price response into a price dictionary.
+        """
+        if isinstance(response, dict):
+            response = [response]
+
+        return {
+            item["symbol"].replace("USDT", ""): float(item["price"])
+            for item in response
+            if item.get("symbol", "").endswith("USDT")
+        }
+
     def get_balances(self) -> list[BinanceBalance]:
         """
         Placeholder for the actual AgentOS/MCP call.

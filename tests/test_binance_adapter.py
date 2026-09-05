@@ -121,5 +121,24 @@ class TestBinanceAdapter(unittest.TestCase):
         self.assertEqual(positions[1].symbol, "ETH")
         self.assertEqual(positions[1].value, 6000.0)
 
+    def test_parse_ticker_prices(self):
+        adapter = BinanceAdapter()
+
+        response = [
+            {
+                "symbol": "BTCUSDT",
+                "price": "100000.00",
+            },
+            {
+                "symbol": "ETHUSDT",
+                "price": "4000.00",
+            },
+        ]
+
+        prices = adapter.parse_ticker_prices(response)
+
+        self.assertEqual(prices["BTC"], 100000.0)
+        self.assertEqual(prices["ETH"], 4000.0)
+
 if __name__ == "__main__":
     unittest.main()
