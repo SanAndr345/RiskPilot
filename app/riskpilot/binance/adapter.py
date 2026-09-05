@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
 
+from riskpilot.risk.portfolio import Position
 
 @dataclass
 class BinanceBalance:
@@ -33,6 +34,20 @@ class BinanceAdapter:
             for item in balances
             if float(item.get("free", 0)) > 0
             or float(item.get("locked", 0)) > 0
+        ]
+
+    def balances_to_positions(
+        self, balances: list[BinanceBalance]
+    ) -> list[Position]:
+        """
+        Convert Binance balances into RiskPilot positions.
+        """
+        return [
+            Position(
+                symbol=balance.asset,
+                value=balance.free + balance.locked,
+            )
+            for balance in balances
         ]
 
     def get_balances(self) -> list[BinanceBalance]:

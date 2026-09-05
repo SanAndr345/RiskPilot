@@ -1,7 +1,6 @@
 import unittest
 
-from riskpilot.binance.adapter import BinanceAdapter
-
+from riskpilot.binance.adapter import BinanceAdapter, BinanceBalance
 
 class TestBinanceAdapter(unittest.TestCase):
 
@@ -37,6 +36,29 @@ class TestBinanceAdapter(unittest.TestCase):
         self.assertEqual(balances[0].free, 0.5)
         self.assertEqual(balances[0].locked, 0.1)
 
+    def test_balances_to_positions(self):
+        adapter = BinanceAdapter()
+
+        balances = [
+            BinanceBalance(
+                asset="BTC",
+                free=0.5,
+                locked=0.1,
+            ),
+            BinanceBalance(
+                asset="ETH",
+                free=1.0,
+                locked=0.5,
+            ),
+        ]
+
+        positions = adapter.balances_to_positions(balances)
+
+        self.assertEqual(len(positions), 2)
+        self.assertEqual(positions[0].symbol, "BTC")
+        self.assertEqual(positions[0].value, 0.6)
+        self.assertEqual(positions[1].symbol, "ETH")
+        self.assertEqual(positions[1].value, 1.5)
 
 if __name__ == "__main__":
     unittest.main()
