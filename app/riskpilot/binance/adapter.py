@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -10,16 +11,35 @@ class BinanceBalance:
 
 class BinanceAdapter:
     """
-    Read-only interface for Binance account data.
+    Read-only interface for Binance AgentOS/MCP data.
 
-    Execution methods will be added in later phases.
+    This adapter defines the interface RiskPilot expects.
+    Actual MCP tool calls are supplied by the connected agent.
     """
+
+    def parse_spot_account(self, response: Any) -> list[BinanceBalance]:
+        """
+        Convert the Binance spot.getAccount response
+        into RiskPilot balance objects.
+        """
+        balances = response.get("balances", []) if isinstance(response, dict) else []
+
+        return [
+            BinanceBalance(
+                asset=item["asset"],
+                free=float(item["free"]),
+                locked=float(item["locked"]),
+            )
+            for item in balances
+            if float(item.get("free", 0)) > 0
+            or float(item.get("locked", 0)) > 0
+        ]
 
     def get_balances(self) -> list[BinanceBalance]:
         """
-        Return Binance account balances.
+        Placeholder for the actual AgentOS/MCP call.
 
-        This is intentionally not connected to Binance yet.
-        The real AgentOS/MCP integration will be wired in later.
+        The connected agent will call:
+        spot.getAccount
         """
         return []
