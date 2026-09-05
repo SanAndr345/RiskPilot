@@ -58,13 +58,20 @@ class BinanceAdapter:
         """
         Convert Binance balances into positions using market prices.
         """
-        return [
-            Position(
-                symbol=balance.asset,
-                value=(balance.free + balance.locked) * prices.get(balance.asset, 0.0),
+        positions = []
+
+        for balance in balances:
+            if balance.asset not in prices:
+                continue
+
+            positions.append(
+                Position(
+                    symbol=balance.asset,
+                    value=(balance.free + balance.locked) * prices[balance.asset],
+                )
             )
-            for balance in balances
-        ]
+
+        return positions
 
     def parse_ticker_prices(self, response):
         """

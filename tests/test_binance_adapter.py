@@ -165,8 +165,9 @@ class TestBinanceAdapter(unittest.TestCase):
             prices,
         )
 
+        self.assertEqual(len(positions), 1)
+        self.assertEqual(positions[0].symbol, "BTC")
         self.assertEqual(positions[0].value, 60000.0)
-        self.assertEqual(positions[1].value, 0.0)
 
 if __name__ == "__main__":
     unittest.main()
